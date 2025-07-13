@@ -3,10 +3,10 @@ package util
 import (
 	"bufio"
 	"io"
-	"log"
 	"os/exec"
 	"strings"
 	"sync"
+	"timeMonitorClient/global"
 )
 
 var (
@@ -198,7 +198,7 @@ func PowerShellOutput() []string {
 	// Initialize PowerShell if not already done
 	if !psInitialized {
 		if err := initPowerShell(); err != nil {
-			log.Printf("Failed to initialize PowerShell: %v", err)
+			global.Error("初始化PowerShell失败")
 			return []string{"other", "other"}
 		}
 	}
@@ -209,7 +209,7 @@ func PowerShellOutput() []string {
 	// Execute the window info command
 	output, err := executeMarkedCommand("Get-WindowInfo")
 	if err != nil {
-		log.Printf("Failed to execute PowerShell command: %v", err)
+		global.Error("执行PowerShell命令失败")
 		return []string{"other", "other"}
 	}
 

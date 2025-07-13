@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/go-toast/toast"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -173,7 +172,8 @@ func Notice(str string) {
 
 	err := notification.Push()
 	if err != nil {
-		log.Fatalf("发送通知失败: %v", err)
+		s := fmt.Sprintf("发送通知失败: %s", err.Error())
+		global.Error(s)
 	}
 }
 
