@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"time"
 	"timeMonitorClient/types"
 )
@@ -132,6 +133,12 @@ func CheckData(result types.UploadDataResult) {
 			Notice("剩余时间： 十分钟")
 		}
 	}
+
+	if result.Lave < 60 {
+		Notice("即将关机")
+		time.Sleep(1 * time.Second)
+		ShotDown()
+	}
 }
 
 func computedTime(currentTime time.Time) int {
@@ -167,5 +174,23 @@ func Notice(str string) {
 	err := notification.Push()
 	if err != nil {
 		log.Fatalf("发送通知失败: %v", err)
+	}
+}
+
+func ShotDown() {
+
+	// 构建 shutdown 命令
+	// /s 表示关机
+	// /t 0 表示延迟0秒，即立即关机
+	cmd := exec.Command("cmd", "/C", "shutdown", "/s", "/t", "0")
+
+	// 执行命令
+	err := cmd.Run()
+
+	if err != nil {
+		fmt.Printf("关闭电脑失败: %v\n", err)
+		fmt.Println("请确保你以管理员权限运行此程序，或者命令有误。")
+	} else {
+		fmt.Println("关机命令已发送。电脑应该会立即关机。")
 	}
 }
