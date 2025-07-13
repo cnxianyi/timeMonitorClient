@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"time"
+	"timeMonitorClient/global"
 	"timeMonitorClient/types"
 )
 
@@ -51,7 +52,7 @@ func UploadOutPut() {
 			forms = append(forms, form)
 
 		}
-		fmt.Println(forms)
+		global.InfoJSON("upload:", forms)
 		jsonData, err := json.Marshal(forms)
 		if err != nil {
 			fmt.Println("Error marshaling JSON:", err)
@@ -101,6 +102,7 @@ func Post(jsonData []byte) (error, types.UploadDataResult) {
 		return fmt.Errorf("error unmarshaling JSON response: %v", err), types.UploadDataResult{}
 	}
 
+	global.InfoJSON("upload result:", res)
 	return nil, res.Data
 }
 
