@@ -14,12 +14,15 @@ import (
 
 var (
 	Logger *zap.Logger
+	Log    bool
 )
 
 // InitLogger 初始化 zap 日志
 func InitLogger() {
 	// 获取项目根目录
 	rootDir, _ := os.Getwd()
+
+	Log = os.Getenv("LOG") == "true"
 
 	// 替换日志路径中的 @/ 为项目根目录
 	logPath := filepath.Join(rootDir, "log")
@@ -86,12 +89,16 @@ func getLogWriter(filename string) zapcore.WriteSyncer {
 
 // Debug 输出 debug 级别日志
 func Debug(msg string, fields ...zap.Field) {
-	Logger.Debug(msg, fields...)
+	if Log {
+		Logger.Debug(msg, fields...)
+	}
 }
 
 // Info 输出 info 级别日志
 func Info(msg string, fields ...zap.Field) {
-	Logger.Info(msg, fields...)
+	if Log {
+		Logger.Info(msg, fields...)
+	}
 }
 
 // Warn 输出 warn 级别日志
@@ -106,43 +113,51 @@ func Error(msg string, fields ...zap.Field) {
 
 // Fatal 输出 fatal 级别日志
 func Fatal(msg string, fields ...zap.Field) {
-	Logger.Fatal(msg, fields...)
+	if Log {
+		Logger.Fatal(msg, fields...)
+	}
 }
 
 // JSON 将任意类型转换为JSON并记录日志
 func JSON(level string, msg string, data interface{}) {
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		Error("JSON序列化失败", zap.Error(err))
-		return
-	}
+	if Log {
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			Error("JSON序列化失败", zap.Error(err))
+			return
+		}
 
-	jsonField := zap.String("json_data", string(jsonData))
+		jsonField := zap.String("json_data", string(jsonData))
 
-	switch strings.ToLower(level) {
-	case "debug":
-		Debug(msg, jsonField)
-	case "info":
-		Info(msg, jsonField)
-	case "warn":
-		Warn(msg, jsonField)
-	case "error":
-		Error(msg, jsonField)
-	case "fatal":
-		Fatal(msg, jsonField)
-	default:
-		Info(msg, jsonField)
+		switch strings.ToLower(level) {
+		case "debug":
+			Debug(msg, jsonField)
+		case "info":
+			Info(msg, jsonField)
+		case "warn":
+			Warn(msg, jsonField)
+		case "error":
+			Error(msg, jsonField)
+		case "fatal":
+			Fatal(msg, jsonField)
+		default:
+			Info(msg, jsonField)
+		}
 	}
 }
 
 // DebugJSON 输出 debug 级别的JSON日志
 func DebugJSON(msg string, data interface{}) {
-	JSON("debug", msg, data)
+	if Log {
+		JSON("debug", msg, data)
+	}
 }
 
 // InfoJSON 输出 info 级别的JSON日志
 func InfoJSON(msg string, data interface{}) {
-	JSON("info", msg, data)
+	if Log {
+		JSON("info", msg, data)
+	}
 }
 
 // WarnJSON 输出 warn 级别的JSON日志
@@ -157,5 +172,7 @@ func ErrorJSON(msg string, data interface{}) {
 
 // FatalJSON 输出 fatal 级别的JSON日志
 func FatalJSON(msg string, data interface{}) {
-	JSON("fatal", msg, data)
+	if Log {
+		JSON("fatal", msg, data)
+	}
 }

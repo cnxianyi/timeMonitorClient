@@ -55,13 +55,13 @@ func UploadOutPut() {
 		global.InfoJSON("upload:", forms)
 		jsonData, err := json.Marshal(forms)
 		if err != nil {
-			fmt.Println("Error marshaling JSON:", err)
+			global.ErrorJSON("Error marshaling JSON:", err.Error())
 			return
 		}
 
 		err, res := Post(jsonData)
 		if err != nil {
-			fmt.Println("Error posting JSON:", err)
+			global.WarnJSON("Error posting JSON:", forms)
 			return
 		}
 
@@ -157,8 +157,6 @@ func computedTime(currentTime time.Time) int {
 }
 
 func Notice(str string) {
-	fmt.Println(str)
-
 	notification := toast.Notification{
 		AppID:   os.Getenv("APPID"), // 你的应用程序ID，这在Windows通知中心显示
 		Title:   os.Getenv("Title"), // 通知标题
@@ -190,9 +188,7 @@ func ShotDown() {
 	err := cmd.Run()
 
 	if err != nil {
-		fmt.Printf("关闭电脑失败: %v\n", err)
-		fmt.Println("请确保你以管理员权限运行此程序，或者命令有误。")
-	} else {
-		fmt.Println("关机命令已发送。电脑应该会立即关机。")
+		s := fmt.Sprintf("关闭电脑失败: %v\n", err)
+		global.Warn(s)
 	}
 }

@@ -14,7 +14,7 @@ func main() {
 	// 初始化日志系统
 	global.InitLogger()
 
-	s := fmt.Sprintf("程序启动成功,用户:%s", os.Getenv("USER"))
+	s := fmt.Sprintf("程序启动成功,用户:%s", os.Getenv("NAME"))
 	global.Info(s)
 
 	go util.SetTaskPowerShell()
